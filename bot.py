@@ -1,5 +1,5 @@
 import requests
-from telegram import Update
+from telegram import Update, Bot
 from telegram.ext import Application, CommandHandler, CallbackContext
 
 # توکن ربات تلگرام
@@ -7,8 +7,8 @@ TELEGRAM_BOT_TOKEN = '7807825480:AAFFA5IFMDKiOgAGRYPg5W_RPM1lkEiqWIM'
 # آی‌دی تلگرام شما
 YOUR_TELEGRAM_ID = '@svy000'
 
-def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('سلام! من ربات قیمت لحظه‌ای ارز، طلا و سکه هستم. برای دریافت قیمت‌ها دستور /price را وارد کنید.')
+async def start(update: Update, context: CallbackContext) -> None:
+    await update.message.reply_text('سلام! من ربات قیمت لحظه‌ای ارز، طلا و سکه هستم. برای دریافت قیمت‌ها دستور /price را وارد کنید.')
 
 def get_tgju_prices():
     # درخواست به API tgju.org برای دریافت قیمت‌ها
@@ -24,7 +24,7 @@ def get_tgju_prices():
 
     return usd_price, gold_price, coin_price
 
-def get_prices(update: Update, context: CallbackContext) -> None:
+async def get_prices(update: Update, context: CallbackContext) -> None:
     # دریافت قیمت‌ها از API tgju.org
     usd_price, gold_price, coin_price = get_tgju_prices()
 
@@ -34,15 +34,15 @@ def get_prices(update: Update, context: CallbackContext) -> None:
     - طلا: {gold_price} تومان
     - سکه: {coin_price} تومان
     """
-    update.message.reply_text(price_message)
+    await update.message.reply_text(price_message)
 
-def send_message_to_me(update: Update, context: CallbackContext) -> None:
+async def send_message_to_me(update: Update, context: CallbackContext) -> None:
     bot = context.bot
     message = 'این یک پیام تست از ربات است.'
-    bot.send_message(chat_id=YOUR_TELEGRAM_ID, text=message)
-    update.message.reply_text('پیام به شما ارسال شد!')
+    await bot.send_message(chat_id=YOUR_TELEGRAM_ID, text=message)
+    await update.message.reply_text('پیام به شما ارسال شد!')
 
-def main():
+async def main():
     # تنظیمات ربات تلگرام
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
 
@@ -52,7 +52,8 @@ def main():
     application.add_handler(CommandHandler("send_message", send_message_to_me))
 
     # شروع ربات
-    application.run_polling()
+    await application.run_polling()
 
 if __name__ == '__main__':
-    main()
+    import asyncio
+    asyncio.run(main())
