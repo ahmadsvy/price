@@ -1,6 +1,6 @@
 import requests
-from telegram import Update, Bot
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram import Update
+from telegram.ext import Application, CommandHandler, CallbackContext
 
 # توکن ربات تلگرام
 TELEGRAM_BOT_TOKEN = '7807825480:AAFFA5IFMDKiOgAGRYPg5W_RPM1lkEiqWIM'
@@ -37,24 +37,22 @@ def get_prices(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(price_message)
 
 def send_message_to_me(update: Update, context: CallbackContext) -> None:
-    bot: Bot = context.bot
+    bot = context.bot
     message = 'این یک پیام تست از ربات است.'
     bot.send_message(chat_id=YOUR_TELEGRAM_ID, text=message)
     update.message.reply_text('پیام به شما ارسال شد!')
 
 def main():
     # تنظیمات ربات تلگرام
-    updater = Updater(TELEGRAM_BOT_TOKEN)
-    dispatcher = updater.dispatcher
+    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
 
     # دستورات ربات
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("price", get_prices))
-    dispatcher.add_handler(CommandHandler("send_message", send_message_to_me))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("price", get_prices))
+    application.add_handler(CommandHandler("send_message", send_message_to_me))
 
     # شروع ربات
-    updater.start_polling()
-    updater.idle()
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
